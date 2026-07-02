@@ -47,14 +47,14 @@ const PlayerHeaderCell: React.FC<{
     <button
       type="button"
       onClick={onSelect}
-      className={`flex min-h-[92px] w-full flex-col items-center justify-center gap-1 px-3 py-3 text-center transition-colors focus:outline-none ${
-        isCurrentTurn ? 'bg-emerald-50' : 'bg-white/80'
+      className={`flex min-h-[76px] w-full flex-col items-center justify-center gap-1 px-1 py-2 text-center transition-colors focus:outline-none sm:min-h-[92px] sm:px-3 sm:py-3 ${
+        isCurrentTurn ? 'bg-emerald-100' : 'bg-white/80'
       } ${isSelected ? 'ring-2 ring-inset ring-yellow-400' : ''}`}
     >
-      <span className="flex h-10 w-10 items-center justify-center rounded-full border border-stone-400 bg-stone-100 text-sm font-semibold tracking-[0.2em] text-stone-700">
+      <span className="flex h-8 w-8 items-center justify-center rounded-full border border-stone-400 bg-stone-100 text-xs font-semibold tracking-[0.16em] text-stone-700 sm:h-10 sm:w-10 sm:text-sm sm:tracking-[0.2em]">
         {formatPlayerNumber(player.playerNumber)}
       </span>
-      <span className="truncate text-sm font-semibold uppercase tracking-[0.22em] text-stone-700">
+      <span className="max-w-full truncate px-1 text-xs font-semibold uppercase tracking-[0.12em] text-stone-700 sm:text-sm sm:tracking-[0.22em]">
         {player.name}
       </span>
     </button>
@@ -72,8 +72,8 @@ const PlayerScoreCell: React.FC<{
       type="button"
       onClick={onClick}
       disabled={!isClickable}
-      className={`flex min-h-[104px] w-full items-center justify-center px-3 py-4 transition-colors focus:outline-none ${
-        isCurrentTurn ? 'bg-emerald-50/80' : 'bg-white/80'
+      className={`flex min-h-[82px] w-full items-center justify-center px-1 py-2 transition-colors focus:outline-none sm:min-h-[104px] sm:px-3 sm:py-4 ${
+        isCurrentTurn ? 'bg-emerald-100/90' : 'bg-white/80'
       } ${isClickable ? 'cursor-pointer hover:bg-amber-50' : 'cursor-default'} disabled:opacity-100`}
     >
       <CricketMark hits={hits} active={isCurrentTurn} />
@@ -87,8 +87,8 @@ const PlayerTotalCell: React.FC<{
 }> = ({ score, isCurrentTurn }) => {
   return (
     <div
-      className={`flex min-h-[82px] w-full items-center justify-center border-t border-stone-400 px-3 py-3 font-serif text-3xl font-black tracking-wide sm:text-4xl ${
-        isCurrentTurn ? 'bg-emerald-50/90 text-stone-900' : 'bg-white/90 text-stone-900'
+      className={`flex min-h-[64px] w-full items-center justify-center border-t border-stone-400 px-1 py-2 font-serif text-2xl font-black tracking-wide sm:min-h-[82px] sm:px-3 sm:py-3 sm:text-4xl ${
+        isCurrentTurn ? 'bg-emerald-100 text-stone-900' : 'bg-white/90 text-stone-900'
       }`}
     >
       {score}
@@ -274,7 +274,7 @@ const Scoreboard: React.FC = () => {
   return (
     <div className="space-y-6">
       <section className="overflow-hidden rounded-[2rem] border border-stone-300 bg-[#f7f2e8] text-stone-900 shadow-[0_24px_80px_rgba(15,23,42,0.35)]">
-        <div className="px-4 pb-5 pt-5 sm:px-6 md:px-8 md:pb-8 md:pt-8">
+        <div className="px-2 pb-4 pt-4 sm:px-6 md:px-8 md:pb-8 md:pt-8">
           <div className="text-center">
 
             <div className="mt-5 flex flex-wrap items-center justify-center gap-3 text-stone-600 md:mt-6">
@@ -326,11 +326,11 @@ const Scoreboard: React.FC = () => {
             )}
           </div>
 
-          <div className="mt-6 overflow-x-auto pb-2">
-            <div className="min-w-[860px] overflow-hidden rounded-[1.5rem] border border-stone-400 bg-white/70">
+          <div className="mt-6 w-full pb-2">
+            <div className="w-full overflow-hidden rounded-[1.5rem] border border-stone-400 bg-white/70">
               <div className="grid border-b border-stone-400" style={{ gridTemplateColumns: sheetGridTemplate }}>
                 {leftPlayers.map(renderPlayerHeader)}
-                <div className="flex min-h-[92px] items-center justify-center border-l border-r border-stone-400 bg-white/60 px-4 py-3 text-center font-serif text-sm uppercase tracking-[0.55em] text-stone-500">
+                <div className="flex min-h-[76px] items-center justify-center border-l border-r border-stone-400 bg-white/60 px-1 py-2 text-center font-serif text-[10px] uppercase tracking-[0.28em] text-stone-500 sm:min-h-[92px] sm:px-4 sm:py-3 sm:text-sm sm:tracking-[0.55em]">
                   Cricket
                 </div>
                 {rightPlayers.map(renderPlayerHeader)}
@@ -341,7 +341,7 @@ const Scoreboard: React.FC = () => {
                   <div key={number} className="grid" style={{ gridTemplateColumns: sheetGridTemplate }}>
                     {leftPlayers.map(player => renderPlayerCell(player, number))}
 
-                    <div className="flex min-h-[104px] items-center justify-center border-l border-r border-stone-400 bg-white/80 px-4 py-4 font-serif text-4xl font-black tracking-wide text-stone-900 sm:text-5xl">
+                    <div className="flex min-h-[82px] items-center justify-center border-l border-r border-stone-400 bg-white/80 px-1 py-2 font-serif text-3xl font-black tracking-wide text-stone-900 sm:min-h-[104px] sm:px-4 sm:py-4 sm:text-5xl">
                       {CRICKET_NUMBER_LABELS[number] ?? number}
                     </div>
 
@@ -358,7 +358,7 @@ const Scoreboard: React.FC = () => {
                     />
                   ))}
 
-                  <div className="flex min-h-[82px] items-center justify-center border-l border-r border-stone-400 border-t border-stone-400 bg-white/95 px-4 py-3 text-center font-sans text-xs font-semibold uppercase tracking-[0.6em] text-stone-500">
+                  <div className="flex min-h-[64px] items-center justify-center border-l border-r border-stone-400 border-t border-stone-400 bg-white/95 px-1 py-2 text-center font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-stone-500 sm:min-h-[82px] sm:px-4 sm:py-3 sm:text-xs sm:tracking-[0.6em]">
                     Score
                   </div>
 
