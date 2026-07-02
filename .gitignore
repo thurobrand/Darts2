@@ -1,0 +1,50 @@
+# Backend (Maven)
+backend/target/
+backend/.classpath
+backend/.project
+backend/.settings/
+backend/bin/
+backend/.idea/
+backend/*.iml
+backend/*.iws
+backend/*.ipr
+backend/.DS_Store
+
+# Frontend (Node)
+frontend/node_modules/
+frontend/dist/
+frontend/.vuepress/dist
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+frontend/pnpm-error.log*
+frontend/lerna-debug.log*
+
+# IDE
+.vscode/
+.idea/
+*.vscode
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# H2 Database
+*.h2.db
+*.mv.db
+data/

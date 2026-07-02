@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-gray-900 text-white;
+}
+
+.card {
+  @apply bg-gray-800 rounded-lg shadow-lg;
+}
+
+.btn {
+  @apply px-4 py-2 rounded font-semibold transition-colors;
+}
+
+.btn-primary {
+  @apply btn bg-blue-600 hover:bg-blue-700 text-white;
+}
+
+.btn-secondary {
+  @apply btn bg-gray-600 hover:bg-gray-700 text-white;
+}
+
+.btn-success {
+  @apply btn bg-green-600 hover:bg-green-700 text-white;
+}
+
+/* Dartboard / Scoreboard styles */
+.scoreboard-column {
+  @apply flex flex-col items-center gap-4 p-4;
+}
+
+.player-header {
+  @apply w-full flex items-center justify-between;
+}
+
+.number-badge {
+  @apply flex items-center justify-center w-12 h-12 rounded-full bg-gray-700 text-lg font-bold;
+}
+
+.hit-dot {
+  @apply w-4 h-4 rounded-full bg-gray-600 border-2 border-gray-700;
+}
+
+.hit-dot.filled {
+  @apply bg-green-500 border-green-600;
+}
+
+.dart-number {
+  @apply flex items-center justify-between w-full bg-gray-700 p-2 rounded;
+}
+
+.key-circle {
+  @apply w-16 h-16 rounded-full flex items-center justify-center bg-gray-700 text-lg font-bold;
+}
+
+.key-circle.selected {
+  @apply ring-4 ring-yellow-400 bg-yellow-500 text-black;
+}
+
+.hit-action {
+  @apply px-4 py-2 rounded-full font-bold;
+}
+
+.hit-action.primary {
+  @apply bg-blue-600 hover:bg-blue-700 text-white;
+}
+
+.hit-action.triple {
+  @apply bg-red-600 hover:bg-red-700 text-white;
+}
