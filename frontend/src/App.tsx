@@ -7,15 +7,9 @@ const App: React.FC = () => {
   const { gameState } = useGame();
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-4">
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-4xl font-bold text-center mb-8">🎯 Cricket Darts Scorer</h1>
-        
-        {!gameState ? (
-          <GameSetup />
-        ) : (
-          <Scoreboard />
-        )}
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(15,23,42,0.95),_rgba(2,6,23,1)_70%)] px-4 py-6 text-white sm:py-8">
+      <div className="mx-auto max-w-7xl">
+        {!gameState ? <GameSetup /> : <Scoreboard />}
       </div>
     </div>
   );
