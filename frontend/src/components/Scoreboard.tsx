@@ -96,7 +96,11 @@ const PlayerTotalCell: React.FC<{
   );
 };
 
-const Scoreboard: React.FC = () => {
+interface ScoreboardProps {
+  onResetToSplash?: () => void;
+}
+
+const Scoreboard: React.FC<ScoreboardProps> = ({ onResetToSplash }) => {
   const { gameState, loading, recordHit, recordMiss, resetGame, removeHit } = useGame();
   const [selectedPlayerId, setSelectedPlayerId] = useState<number | null>(null);
   const [hitSelectorTarget, setHitSelectorTarget] = useState<{ number: number; playerId: number } | null>(null);
@@ -239,6 +243,7 @@ const Scoreboard: React.FC = () => {
     setPreviousState(null);
     setScoringHistory([]);
     resetGame();
+    onResetToSplash?.();
   };
 
   const targetPlayer = hitSelectorTarget ? gameState.players.find(p => p.id === hitSelectorTarget.playerId) : null;
