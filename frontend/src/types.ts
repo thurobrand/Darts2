@@ -13,12 +13,18 @@ export interface Player {
 
 export interface GameState {
   gameSessionId: number;
-  sessionName: string;
   status: "IN_PROGRESS" | "COMPLETED";
   winnerId?: number;
   players: Player[];
   currentPlayerIndex: number;
   dartsThisRound: number;
+}
+
+export interface GameHistoryEntry {
+  gameSessionId: number;
+  winnerId?: number;
+  players: Player[];
+  completedAt: number;
 }
 
 export interface HitRequest {

@@ -1,323 +1,101 @@
-# 🎯 Cricket Darts Scorer - Single Page Application (SPA)
+# Cricket Darts Scorer
 
-A comprehensive full-stack application for scoring and tracking cricket darts games. Built with Spring Boot backend and React frontend using modern development technologies.
+A browser-native Cricket darts scorer with a React frontend and a minimal Spring Boot backend runtime.
 
-## 📋 Table of Contents
+## Overview
 
-- [Project Overview](#project-overview)
-- [Project Structure](#project-structure)
-- [Tech Stack](#tech-stack)
-- [Game Rules](#game-rules)
-- [Backend Architecture](#backend-architecture)
-- [Frontend Architecture](#frontend-architecture)
-- [Setup & Installation](#setup--installation)
-- [API Documentation](#api-documentation)
-- [Component Hierarchy](#component-hierarchy)
+Game scoring and turn management run entirely in the browser.
+The frontend persists state in browser storage, including:
 
----
+- Active game state
+- Saved player names
+- Completed game history
 
-## 🎮 Project Overview
+The backend no longer exposes game-scoring endpoints. It now provides runtime support and a health endpoint.
 
-Cricket Darts is a competitive dart game where players race to "close" all numbers (15-20 and Bullseye/25) and score points on closed numbers when opponents haven't closed them yet.
+## Project Structure
 
-### Key Features
-
-- Real-time game scoring
-- Multi-player support (2-4 players)
-- Persistent game sessions with H2 database
-- REST API for game operations
-- Responsive React UI with Tailwind CSS
-- Type-safe TypeScript implementation
-
----
-
-## 📁 Project Structure
-
-This is a **mono-repo** approach keeping backend and frontend in a single project directory:
-
-```
+```text
 Darts2/
-├── backend/                          # Spring Boot Application
+├── backend/
+│   ├── src/main/java/com/darts/cricket/
+│   │   ├── CricketDartsApplication.java
+│   │   └── controller/
+│   │       └── HealthController.java
+│   ├── src/main/resources/
+│   │   └── application.properties
+│   └── pom.xml
+├── frontend/
 │   ├── src/
-│   │   ├── main/
-│   │   │   ├── java/com/darts/cricket/
-│   │   │   │   ├── CricketDartsApplication.java    # Application entry point
-│   │   │   │   ├── controller/
-│   │   │   │   │   └── GameController.java         # REST endpoints
-│   │   │   │   ├── service/
-│   │   │   │   │   └── GameService.java            # Game logic
-│   │   │   │   ├── model/
-│   │   │   │   │   ├── GameSession.java            # Game entity
-│   │   │   │   │   ├── Player.java                 # Player entity
-│   │   │   │   │   └── GameStatus.java             # Enum
-│   │   │   │   ├── repository/
-│   │   │   │   │   └── GameSessionRepository.java  # JPA repository
-│   │   │   │   └── dto/
-│   │   │   │       ├── HitRequest.java             # Request DTO
-│   │   │   │       ├── GameStateResponse.java      # Response DTO
-│   │   │   │       └── PlayerStateDto.java         # Player DTO
-│   │   │   └── resources/
-│   │   │       └── application.properties          # Spring config
-│   │   └── test/java                                # Unit tests
-│   └── pom.xml                                      # Maven config
-│
-├── frontend/                         # React + Vite Application
-│   ├── src/
+│   │   ├── App.tsx
 │   │   ├── components/
-│   │   │   ├── App.tsx                             # Main app component
-│   │   │   ├── Scoreboard.tsx                      # Game scoreboard
-│   │   │   ├── PlayerColumn.tsx                    # Player display
-│   │   │   ├── Keypad.tsx                          # Score input
-│   │   │   └── GameSetup.tsx                       # Game initialization
 │   │   ├── context/
-│   │   │   └── GameContext.tsx                     # State management
-│   │   ├── services/
-│   │   │   └── api.ts                              # API client
-│   │   ├── types.ts                                # TypeScript types
-│   │   ├── index.css                               # Global styles
-│   │   └── main.tsx                                # Entry point
-│   ├── public/                                      # Static assets
-│   ├── index.html                                   # HTML template
-│   ├── vite.config.ts                              # Vite config
-│   ├── tsconfig.json                               # TypeScript config
-│   ├── tailwind.config.js                          # Tailwind config
-│   ├── postcss.config.js                           # PostCSS config
-│   └── package.json                                # NPM dependencies
-│
-└── README.md                         # This file
+│   │   │   └── GameContext.tsx
+│   │   └── types.ts
+│   ├── package.json
+│   └── vite.config.ts
+├── docker-compose.yml
+└── run-compose.sh
 ```
 
----
-
-## 🛠 Tech Stack
+## Tech Stack
 
 ### Backend
-- **Runtime**: Java 17+
-- **Framework**: Spring Boot 3.2.0
-  - Spring Web (REST APIs)
-  - Spring Data JPA (Persistence)
-  - Spring CORS support
-- **Database**: H2 (In-memory, automatic schema generation)
-- **Build Tool**: Maven
-- **Utilities**: Lombok (boilerplate reduction)
+- Java 17+
+- Spring Boot 3.2 (Spring Web)
+- Maven
 
 ### Frontend
-- **Runtime**: Node.js 16+
-- **Framework**: React 18
-- **Build Tool**: Vite (lightning-fast builds)
-- **Language**: TypeScript 5
-- **Styling**: Tailwind CSS 3
-- **HTTP Client**: Axios
-- **State Management**: React Context API
+- React 18
+- TypeScript 5
+- Vite
+- Tailwind CSS
 
----
+## Gameplay Rules
 
-## 🎲 Game Rules
+- Targets are 15, 16, 17, 18, 19, 20, and Bull (25)
+- Single = 1 mark, Double = 2 marks, Triple = 3 marks (Bull allows single/double)
+- A number is closed at 3 marks
+- Overflow marks score points only while at least one opponent has not closed that target
+- Turns rotate after 3 darts
+- A winner must have all numbers closed and score greater than or equal to all opponents
 
-### Game Objective
-Close all cricket numbers (15, 16, 17, 18, 19, 20, Bullseye=25) with the highest score.
+## Browser Storage Keys
 
-### How to Close a Number
-- A number is "closed" after 3 hits
-- **Single** = 1 hit
-- **Double** = 2 hits
-- **Triple** = 3 hits (immediately closes a number)
+Frontend state is persisted with these keys:
 
-### Scoring Points
-- Once a player closes a number, any subsequent hits on that number score points
-- Points only count if **at least one opponent hasn't closed that number**
-- Point value = number × hit value
-  - Example: Hitting triple 20 when closed = 60 points (20 × 3)
+- `darts2.activeGame`
+- `darts2.savedPlayers`
+- `darts2.gameHistory`
 
-### Win Condition
-A player wins by:
-1. Closing ALL seven numbers (15-20, Bullseye)
-2. Having the highest score among all players with all numbers closed
+## Backend Endpoint
 
----
+- `GET /health` for readiness checks
 
-## 🏗 Backend Architecture
+## Local Development
 
-### Entity Relationships
+### Frontend
 
-```
-GameSession (1) ──> (Many) Player
-   ├─ id
-   ├─ sessionName
-   ├─ status (IN_PROGRESS | COMPLETED)
-   ├─ winnerId
-   ├─ createdAt
-   └─ updatedAt
-
-Player
-   ├─ id
-   ├─ name
-   ├─ playerNumber
-   ├─ hitCounts (Map: {15→2, 16→0, ...})
-   ├─ score (int)
-   └─ allClosed (boolean)
+```bash
+cd frontend
+npm install
+npm run dev
 ```
 
-### Service Layer (GameService)
+### Backend
 
-**Primary Methods:**
-
-1. **`createGameSession(sessionName, playerNames)`**
-   - Creates new game with players
-   - Initializes hit counts for each player
-
-2. **`recordHit(HitRequest)`**
-   - Processes dart hit for a player
-   - Updates hit counts
-   - Awards points if applicable
-   - Checks win conditions
-
-3. **`checkWinCondition(session)`**
-   - Verifies if any player meets win criteria
-   - Updates game status to COMPLETED
-   - Sets winner ID
-
-### Game Logic Flow
-
-```
-Player records hit
-    ↓
-Check if number already closed
-    ├─ YES → Score points (if opponent not closed)
-    └─ NO → Increment hit count
-    ↓
-Check if all numbers now closed
-    ├─ YES → Update allClosed flag
-    └─ NO → Continue
-    ↓
-Check win condition
-    ├─ All closed + highest score → Game ends
-    └─ Continue
-    ↓
-Return updated GameState to client
+```bash
+cd backend
+mvn spring-boot:run
 ```
 
-### REST API Endpoints
+## Docker Compose
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/games` | Create new game session |
-| GET | `/api/games/{gameId}` | Get current game state |
-| POST | `/api/games/{gameId}/hit` | Record a hit |
-
----
-
-## ⚛️ Frontend Architecture
-
-### Component Hierarchy
-
-```
-App
-├── GameSetup
-│   └── [Takes player names and creates game]
-│
-└── Scoreboard (when game exists)
-    ├── PlayerColumn (× 2-4)
-    │   └── [Displays player score and hit status]
-    │
-    └── Keypad
-        ├── [Cricket number selection grid]
-        └── [Single/Double/Triple buttons]
+```bash
+./run-compose.sh up
 ```
 
-### State Management (GameContext)
-
-The application uses **React Context API** for global state management:
-
-```typescript
-interface GameContextType {
-  gameState: GameState | null;      // Current game data
-  loading: boolean;                 // API call status
-  error: string | null;             // Error messages
-  
-  createGame(...);                  // Create new game
-  loadGame(...);                    // Load existing game
-  recordHit(...);                   // Submit hit
-}
-```
-
-### Component Descriptions
-
-#### **App.tsx**
-- Root component
-- Conditionally renders GameSetup or Scoreboard
-- Wraps app with GameProvider
-
-#### **GameSetup.tsx**
-- Form for game initialization
-- Inputs: session name, player count, player names
-- Calls `createGame()` from context
-
-#### **Scoreboard.tsx**
-- Main game view
-- Displays all players
-- Conditionally shows Keypad
-- Shows game-over message and winner
-
-#### **PlayerColumn.tsx**
-- Individual player display card
-- Shows name and total score
-- Displays hit status for each cricket number
-- Shows closed status (✓) for completed numbers
-- Selectable to input scores
-
-#### **Keypad.tsx**
-- Score input interface (only visible when player selected)
-- 7 buttons for cricket numbers (15-20, Bull)
-- 3 action buttons: Single, Double, Triple
-- Sends hit request to API
-
----
-
-## 🚀 Setup & Installation
-
-### Prerequisites
-
-- **Java 17+** (for backend)
-- **Node.js 16+** (for frontend)
-- **Maven** (for backend build)
-- **npm** or **yarn** (for frontend dependencies)
-
-### Backend Setup
-
-1. **Navigate to backend:**
-   ```bash
-   cd backend
-   ```
-
-2. **Install dependencies & build:**
-   ```bash
-   mvn clean install
-   ```
-
-3. **Run Spring Boot application:**
-   ```bash
-   mvn spring-boot:run
-   ```
-
-   The backend will start on `http://localhost:8080`
-
-4. **H2 Console (optional):**
-   - Access: `http://localhost:8080/h2-console`
-   - JDBC URL: `jdbc:h2:mem:cricketdb`
-   - Username: `sa`
-   - Password: (leave empty)
-
-### Frontend Setup
-
-1. **Navigate to frontend:**
-   ```bash
-   cd frontend
-   ```
-
-2. **Install dependencies:**
-   ```bash
-   npm install
+The script waits for backend readiness using `http://localhost:8080/health` and exposes frontend on port 80 by default (or 8080 for some rootless Podman setups).
    ```
 
 3. **Start development server:**

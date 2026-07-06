@@ -23,8 +23,8 @@ const CricketMark: React.FC<{ hits: number; active?: boolean }> = ({ hits, activ
   const strokeClass = active ? 'stroke-emerald-700' : 'stroke-stone-800';
 
   return (
-    <div className="flex h-10 w-10 items-center justify-center" aria-label={`${cappedHits} cricket marks`}>
-      <svg viewBox="0 0 32 32" className="h-8 w-8" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <div className="flex h-8 w-8 items-center justify-center sm:h-10 sm:w-10" aria-label={`${cappedHits} cricket marks`}>
+      <svg viewBox="0 0 32 32" className="h-7 w-7 sm:h-8 sm:w-8" fill="none" xmlns="http://www.w3.org/2000/svg">
         {cappedHits >= 1 && (
           <line x1="8" y1="24" x2="24" y2="8" className={strokeClass} strokeWidth="3" strokeLinecap="round" />
         )}
@@ -47,14 +47,14 @@ const PlayerHeaderCell: React.FC<{
     <button
       type="button"
       onClick={onSelect}
-      className={`flex min-h-[76px] w-full flex-col items-center justify-center gap-1 px-1 py-2 text-center transition-colors focus:outline-none sm:min-h-[92px] sm:px-3 sm:py-3 ${
+      className={`flex min-h-[clamp(52px,8.5vh,92px)] w-full flex-col items-center justify-center gap-1 px-1 py-1.5 text-center transition-colors focus:outline-none sm:px-3 sm:py-2 ${
         isCurrentTurn ? 'bg-emerald-100' : 'bg-white/80'
       } ${isSelected ? 'ring-2 ring-inset ring-yellow-400' : ''}`}
     >
-      <span className="flex h-8 w-8 items-center justify-center rounded-full border border-stone-400 bg-stone-100 text-xs font-semibold tracking-[0.16em] text-stone-700 sm:h-10 sm:w-10 sm:text-sm sm:tracking-[0.2em]">
+      <span className="flex h-7 w-7 items-center justify-center rounded-full border border-stone-400 bg-stone-100 text-[10px] font-semibold tracking-[0.12em] text-stone-700 sm:h-9 sm:w-9 sm:text-xs sm:tracking-[0.18em]">
         {formatPlayerNumber(player.playerNumber)}
       </span>
-      <span className="max-w-full truncate px-1 text-xs font-semibold uppercase tracking-[0.12em] text-stone-700 sm:text-sm sm:tracking-[0.22em]">
+      <span className="max-w-full truncate px-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-stone-700 sm:text-xs sm:tracking-[0.18em]">
         {player.name}
       </span>
     </button>
@@ -72,7 +72,7 @@ const PlayerScoreCell: React.FC<{
       type="button"
       onClick={onClick}
       disabled={!isClickable}
-      className={`flex min-h-[82px] w-full items-center justify-center px-1 py-2 transition-colors focus:outline-none sm:min-h-[104px] sm:px-3 sm:py-4 ${
+      className={`flex min-h-[clamp(58px,9.5vh,104px)] w-full items-center justify-center px-1 py-1.5 transition-colors focus:outline-none sm:px-3 sm:py-3 ${
         isCurrentTurn ? 'bg-emerald-100/90' : 'bg-white/80'
       } ${isClickable ? 'cursor-pointer hover:bg-amber-50' : 'cursor-default'} disabled:opacity-100`}
     >
@@ -87,7 +87,7 @@ const PlayerTotalCell: React.FC<{
 }> = ({ score, isCurrentTurn }) => {
   return (
     <div
-      className={`flex min-h-[64px] w-full items-center justify-center border-t border-stone-400 px-1 py-2 font-serif text-2xl font-black tracking-wide sm:min-h-[82px] sm:px-3 sm:py-3 sm:text-4xl ${
+      className={`flex min-h-[clamp(46px,7.2vh,82px)] w-full items-center justify-center border-t border-stone-400 px-1 py-1.5 font-serif text-xl font-black tracking-wide sm:px-3 sm:py-2 sm:text-3xl ${
         isCurrentTurn ? 'bg-emerald-100 text-stone-900' : 'bg-white/90 text-stone-900'
       }`}
     >
@@ -277,65 +277,66 @@ const Scoreboard: React.FC<ScoreboardProps> = ({ onResetToSplash }) => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
+      <div className="sticky top-2 z-40">
+        <div className="flex flex-wrap items-center justify-between gap-1.5 rounded-xl border border-stone-300 bg-white/95 px-2.5 py-1.5 shadow-md backdrop-blur">
+          <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-stone-600">Turn controls</div>
+          {!isGameOver && currentPlayer && (
+            <div className="flex flex-wrap gap-1.5">
+              <button
+                onClick={handleMiss}
+                disabled={loading}
+                className="rounded-full bg-stone-700 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.06em] text-white transition-colors hover:bg-stone-800 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Next Player (Miss)
+              </button>
+              <button
+                onClick={handleUndoLastScore}
+                disabled={loading || scoringHistory.length === 0 || !!hitSelectorTarget}
+                title={hitSelectorTarget ? 'Close the hit selector before undoing' : ''}
+                className="rounded-full bg-rose-600 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.06em] text-white transition-colors hover:bg-rose-500 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Undo last score
+              </button>
+              <button
+                onClick={handleResetGame}
+                className="rounded-full bg-stone-200 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.06em] text-stone-800 transition-colors hover:bg-stone-300"
+              >
+                Reset
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
       <section className="overflow-hidden rounded-[2rem] border border-stone-300 bg-[#f7f2e8] text-stone-900 shadow-[0_24px_80px_rgba(15,23,42,0.35)]">
-        <div className="px-2 pb-4 pt-4 sm:px-6 md:px-8 md:pb-8 md:pt-8">
+        <div className="px-2 pb-3 pt-3 sm:px-4 md:px-6 md:pb-5 md:pt-5">
           <div className="text-center">
 
-            <div className="mt-5 flex flex-wrap items-center justify-center gap-3 text-stone-600 md:mt-6">
-              <span className="text-sm uppercase tracking-[0.35em]">{gameState.sessionName}</span>
+            <div className="mt-2 flex flex-wrap items-center justify-center gap-2 text-stone-600 md:mt-3">
               {!isGameOver && scoringPlayer && (
-                <span className="rounded-full border border-stone-300 bg-white/60 px-3 py-1 text-sm font-semibold tracking-[0.14em] text-stone-700">
+                <span className="rounded-full border border-stone-300 bg-white/60 px-2.5 py-0.5 text-xs font-semibold tracking-[0.1em] text-stone-700">
                   Now scoring: {scoringPlayer.name}
                 </span>
               )}
               {!isGameOver && (
-                <span className="rounded-full border border-stone-300 bg-white/60 px-3 py-1 text-sm tracking-[0.14em] text-stone-700">
+                <span className="rounded-full border border-stone-300 bg-white/60 px-2.5 py-0.5 text-xs tracking-[0.1em] text-stone-700">
                   Darts this turn: {gameState.dartsThisRound}/3 • Remaining: {dartsRemaining}
                 </span>
               )}
-              <span className={`rounded-full px-3 py-1 text-sm font-semibold tracking-[0.18em] ${isGameOver ? 'bg-emerald-100 text-emerald-800' : 'bg-sky-100 text-sky-800'}`}>
+              <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold tracking-[0.12em] ${isGameOver ? 'bg-emerald-100 text-emerald-800' : 'bg-sky-100 text-sky-800'}`}>
                 {isGameOver ? 'COMPLETED' : 'IN PROGRESS'}
               </span>
             </div>
 
-            {isGameOver && winner && <div className="mt-4 text-lg font-bold text-amber-700">Winner: {winner.name}</div>}
+            {isGameOver && winner && <div className="mt-2 text-base font-bold text-amber-700">Winner: {winner.name}</div>}
           </div>
 
-          <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-stone-300 bg-white/70 px-4 py-3 shadow-sm">
-            <div className="text-sm uppercase tracking-[0.3em] text-stone-500">Turn controls</div>
-            {!isGameOver && currentPlayer && (
-              <div className="flex flex-wrap gap-2">
-                <button
-                  onClick={handleMiss}
-                  disabled={loading}
-                  className="rounded-full bg-stone-700 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-stone-800 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Next Player (Miss)
-                </button>
-                <button
-                  onClick={handleUndoLastScore}
-                  disabled={loading || scoringHistory.length === 0 || !!hitSelectorTarget}
-                  title={hitSelectorTarget ? 'Close the hit selector before undoing' : ''}
-                  className="rounded-full bg-rose-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-rose-500 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Undo last score
-                </button>
-                <button
-                  onClick={handleResetGame}
-                  className="rounded-full bg-stone-200 px-4 py-2 text-sm font-semibold text-stone-800 transition-colors hover:bg-stone-300"
-                >
-                  Reset
-                </button>
-              </div>
-            )}
-          </div>
-
-          <div className="mt-6 w-full pb-2">
+          <div className="mt-3 w-full pb-1">
             <div className="w-full overflow-hidden rounded-[1.5rem] border border-stone-400 bg-white/70">
               <div className="grid border-b border-stone-400" style={{ gridTemplateColumns: sheetGridTemplate }}>
                 {leftPlayers.map(renderPlayerHeader)}
-                <div className="flex min-h-[76px] items-center justify-center border-l border-r border-stone-400 bg-white/60 px-1 py-2 text-center font-serif text-[10px] uppercase tracking-[0.28em] text-stone-500 sm:min-h-[92px] sm:px-4 sm:py-3 sm:text-sm sm:tracking-[0.55em]">
+                <div className="flex min-h-[clamp(52px,8.5vh,92px)] items-center justify-center border-l border-r border-stone-400 bg-white/60 px-1 py-1.5 text-center font-serif text-[10px] uppercase tracking-[0.22em] text-stone-500 sm:px-3 sm:py-2 sm:text-xs sm:tracking-[0.4em]">
                   Cricket
                 </div>
                 {rightPlayers.map(renderPlayerHeader)}
@@ -346,7 +347,7 @@ const Scoreboard: React.FC<ScoreboardProps> = ({ onResetToSplash }) => {
                   <div key={number} className="grid" style={{ gridTemplateColumns: sheetGridTemplate }}>
                     {leftPlayers.map(player => renderPlayerCell(player, number))}
 
-                    <div className="flex min-h-[82px] items-center justify-center border-l border-r border-stone-400 bg-white/80 px-1 py-2 font-serif text-3xl font-black tracking-wide text-stone-900 sm:min-h-[104px] sm:px-4 sm:py-4 sm:text-5xl">
+                    <div className="flex min-h-[clamp(58px,9.5vh,104px)] items-center justify-center border-l border-r border-stone-400 bg-white/80 px-1 py-1.5 font-serif text-2xl font-black tracking-wide text-stone-900 sm:px-3 sm:py-3 sm:text-4xl">
                       {CRICKET_NUMBER_LABELS[number] ?? number}
                     </div>
 
@@ -363,7 +364,7 @@ const Scoreboard: React.FC<ScoreboardProps> = ({ onResetToSplash }) => {
                     />
                   ))}
 
-                  <div className="flex min-h-[64px] items-center justify-center border-l border-r border-stone-400 border-t border-stone-400 bg-white/95 px-1 py-2 text-center font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-stone-500 sm:min-h-[82px] sm:px-4 sm:py-3 sm:text-xs sm:tracking-[0.6em]">
+                  <div className="flex min-h-[clamp(46px,7.2vh,82px)] items-center justify-center border-l border-r border-stone-400 border-t border-stone-400 bg-white/95 px-1 py-1.5 text-center font-sans text-[10px] font-semibold uppercase tracking-[0.14em] text-stone-500 sm:px-3 sm:py-2 sm:text-[11px] sm:tracking-[0.35em]">
                     Score
                   </div>
 

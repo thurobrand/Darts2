@@ -31,7 +31,7 @@ run_compose() {
 }
 
 wait_for_backend() {
-  local ready_url="http://localhost:8080/api/games/health"
+  local ready_url="http://localhost:8080/health"
   local attempt=1
   local max_attempts=30
 
