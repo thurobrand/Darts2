@@ -1,12 +1,27 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useGame } from '../context/GameContext';
 import setupBackground from '../thurcricketbg2.jpeg';
 
+const DEFAULT_PLAYER_NAMES = ['Brian', 'Donny', 'Ross', 'Jonathan'];
+
 const GameSetup: React.FC = () => {
-  const { createGame, loading, error } = useGame();
-  const [sessionName, setSessionName] = useState('Game 1');
+  const { createGame, loading, error, savedPlayerNames, gameHistory, addSavedPlayerName } = useGame();
   const [playerCount, setPlayerCount] = useState(2);
-  const [playerNames, setPlayerNames] = useState(['Player 1', 'Player 2']);
+  const [playerNames, setPlayerNames] = useState([
+    savedPlayerNames[0] || 'Player 1',
+    savedPlayerNames[1] || 'Player 2',
+  ]);
+
+  useEffect(() => {
+    if (savedPlayerNames.length === 0) {
+      return;
+    }
+
+    const allDefaults = playerNames.every((name, index) => name === `Player ${index + 1}`);
+    if (allDefaults) {
+      setPlayerNames(prev => prev.map((_, index) => savedPlayerNames[index] || `Player ${index + 1}`));
+    }
+  }, [savedPlayerNames]);
 
   const handlePlayerCountChange = (count: number) => {
     setPlayerCount(count);
@@ -20,12 +35,33 @@ const GameSetup: React.FC = () => {
     setPlayerNames(newNames);
   };
 
+  const playerNameOptions = Array.from(
+    new Set([
+      ...DEFAULT_PLAYER_NAMES,
+      ...savedPlayerNames,
+      ...playerNames.map(name => name.trim()).filter(Boolean),
+    ])
+  );
+
+  const handlePlayerNameSelect = (index: number, selectedName: string) => {
+    if (!selectedName) {
+      return;
+    }
+    handlePlayerNameChange(index, selectedName);
+    addSavedPlayerName(selectedName);
+  };
+
+  const handlePlayerNameBlur = (index: number) => {
+    const typedName = playerNames[index];
+    addSavedPlayerName(typedName);
+  };
+
   const handleStartGame = async () => {
     if (playerNames.some(name => !name.trim())) {
       alert('Please enter names for all players');
       return;
     }
-    await createGame(sessionName, playerNames);
+    await createGame(playerNames);
   };
 
   return (
@@ -47,18 +83,6 @@ const GameSetup: React.FC = () => {
                 Error: {error}
               </div>
             )}
-
-            {/* Session Name */}
-            <div className="mb-6">
-              <label className="mb-2 block text-sm font-semibold text-slate-100">Session Name</label>
-              <input
-                type="text"
-                value={sessionName}
-                onChange={(e) => setSessionName(e.target.value)}
-                className="w-full rounded border border-slate-500 bg-slate-800/80 px-4 py-2 text-white"
-                placeholder="Enter game name"
-              />
-            </div>
 
             {/* Player Count */}
             <div className="mb-6">
@@ -85,14 +109,29 @@ const GameSetup: React.FC = () => {
               <label className="mb-2 block text-sm font-semibold text-slate-100">Player Names</label>
               <div className="space-y-2">
                 {playerNames.map((name, index) => (
-                  <input
-                    key={index}
-                    type="text"
-                    value={name}
-                    onChange={(e) => handlePlayerNameChange(index, e.target.value)}
-                    className="w-full rounded border border-slate-500 bg-slate-800/80 px-4 py-2 text-white"
-                    placeholder={`Player ${index + 1}`}
-                  />
+                  <div key={index} className="grid grid-cols-[1fr_auto] gap-2">
+                    <input
+                      type="text"
+                      value={name}
+                      onChange={(e) => handlePlayerNameChange(index, e.target.value)}
+                      onBlur={() => handlePlayerNameBlur(index)}
+                      className="w-full rounded border border-slate-500 bg-slate-800/80 px-4 py-2 text-white"
+                      placeholder={`Player ${index + 1}`}
+                    />
+                    <select
+                      value=""
+                      onChange={(e) => handlePlayerNameSelect(index, e.target.value)}
+                      className="min-w-[8.5rem] rounded border border-slate-500 bg-slate-800/80 px-3 py-2 text-sm text-slate-100"
+                      aria-label={`Select saved player name for player ${index + 1}`}
+                    >
+                      <option value="">Choose...</option>
+                      {playerNameOptions.map((optionName) => (
+                        <option key={`${index}-${optionName}`} value={optionName}>
+                          {optionName}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 ))}
               </div>
             </div>
@@ -105,6 +144,24 @@ const GameSetup: React.FC = () => {
             >
               {loading ? 'Starting...' : 'Start Game'}
             </button>
+
+            {gameHistory.length > 0 && (
+              <div className="mt-6 rounded-xl border border-white/15 bg-black/25 p-3 text-slate-100">
+                <div className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">Recent games</div>
+                <div className="mt-2 max-h-28 space-y-2 overflow-y-auto pr-1 text-xs">
+                  {gameHistory.slice(0, 5).map((entry) => {
+                    const winner = entry.players.find(player => player.id === entry.winnerId);
+                    return (
+                      <div key={entry.completedAt} className="rounded bg-white/10 px-2 py-1">
+                        <div className="text-slate-300">
+                          Winner: {winner?.name || 'n/a'} • {new Date(entry.completedAt).toLocaleString()}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
