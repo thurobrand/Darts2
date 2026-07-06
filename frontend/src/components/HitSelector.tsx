@@ -5,13 +5,13 @@ interface HitSelectorProps {
   playerName: string;
   currentHits: number;
   onHit: (hitValue: number) => void;
-  onMiss: () => void;
+  onNext: () => void;
   onRemoveHit: () => void;
   onClose: () => void;
   loading: boolean;
 }
 
-const HitSelector: React.FC<HitSelectorProps> = ({ number, playerName, currentHits, onHit, onMiss, onRemoveHit, onClose, loading }) => {
+const HitSelector: React.FC<HitSelectorProps> = ({ number, playerName, currentHits, onHit, onNext, onRemoveHit, onClose, loading }) => {
   const hitOptions = number === 25 ? [1, 2] : [1, 2, 3];
 
   return (
@@ -54,11 +54,11 @@ const HitSelector: React.FC<HitSelectorProps> = ({ number, playerName, currentHi
           </div>
 
           <button
-            onClick={onMiss}
+            onClick={onNext}
             disabled={loading}
             className="w-full mt-4 py-2 px-4 bg-gray-600 hover:bg-gray-500 text-white rounded font-semibold transition-all disabled:opacity-50"
           >
-            Miss (No Score)
+            Next
           </button>
 
           {currentHits > 0 && (

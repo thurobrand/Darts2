@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useGame } from '../context/GameContext';
+import setupBackground from '../thurcricketbg2.jpeg';
 
 const GameSetup: React.FC = () => {
   const { createGame, loading, error } = useGame();
@@ -28,72 +29,85 @@ const GameSetup: React.FC = () => {
   };
 
   return (
-    <div className="bg-gray-800 rounded-lg p-8 max-w-md mx-auto">
-      <h2 className="text-2xl font-bold mb-6">Setup New Game</h2>
-
-      {error && (
-        <div className="bg-red-600 text-white p-3 rounded mb-4">
-          Error: {error}
-        </div>
-      )}
-
-      {/* Session Name */}
-      <div className="mb-6">
-        <label className="block text-sm font-semibold mb-2">Session Name</label>
-        <input
-          type="text"
-          value={sessionName}
-          onChange={(e) => setSessionName(e.target.value)}
-          className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
-          placeholder="Enter game name"
+    <div className="mx-auto w-full max-w-5xl overflow-hidden rounded-3xl border border-white/15 shadow-[0_30px_80px_rgba(2,6,23,0.65)]">
+      <div className="relative min-h-[72vh]">
+        <img
+          src={setupBackground}
+          alt="Cricket darts board background"
+          className="absolute inset-0 h-full w-full object-cover"
         />
-      </div>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/55 to-black/70" />
 
-      {/* Player Count */}
-      <div className="mb-6">
-        <label className="block text-sm font-semibold mb-2">Number of Players</label>
-        <div className="flex gap-2">
-          {[2, 3, 4].map(count => (
+        <div className="relative z-10 mx-auto flex min-h-[72vh] max-w-md items-center px-4 py-8 sm:px-6">
+          <div className="w-full rounded-2xl border border-white/20 bg-slate-900/70 p-6 backdrop-blur-sm sm:p-8">
+            <h2 className="mb-6 text-2xl font-bold text-white">Setup New Game</h2>
+
+            {error && (
+              <div className="mb-4 rounded bg-red-600 p-3 text-white">
+                Error: {error}
+              </div>
+            )}
+
+            {/* Session Name */}
+            <div className="mb-6">
+              <label className="mb-2 block text-sm font-semibold text-slate-100">Session Name</label>
+              <input
+                type="text"
+                value={sessionName}
+                onChange={(e) => setSessionName(e.target.value)}
+                className="w-full rounded border border-slate-500 bg-slate-800/80 px-4 py-2 text-white"
+                placeholder="Enter game name"
+              />
+            </div>
+
+            {/* Player Count */}
+            <div className="mb-6">
+              <label className="mb-2 block text-sm font-semibold text-slate-100">Number of Players</label>
+              <div className="flex gap-2">
+                {[2, 3, 4].map(count => (
+                  <button
+                    key={count}
+                    onClick={() => handlePlayerCountChange(count)}
+                    className={`flex-1 rounded py-2 px-3 font-semibold transition-colors ${
+                      playerCount === count
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-slate-700/90 text-slate-200 hover:bg-slate-600'
+                    }`}
+                  >
+                    {count}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Player Names */}
+            <div className="mb-6">
+              <label className="mb-2 block text-sm font-semibold text-slate-100">Player Names</label>
+              <div className="space-y-2">
+                {playerNames.map((name, index) => (
+                  <input
+                    key={index}
+                    type="text"
+                    value={name}
+                    onChange={(e) => handlePlayerNameChange(index, e.target.value)}
+                    className="w-full rounded border border-slate-500 bg-slate-800/80 px-4 py-2 text-white"
+                    placeholder={`Player ${index + 1}`}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Start Button */}
             <button
-              key={count}
-              onClick={() => handlePlayerCountChange(count)}
-              className={`flex-1 py-2 px-3 rounded font-semibold transition-colors ${
-                playerCount === count
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-              }`}
+              onClick={handleStartGame}
+              disabled={loading}
+              className="w-full rounded bg-green-600 py-3 font-bold text-white transition-colors hover:bg-green-700 disabled:bg-green-800"
             >
-              {count}
+              {loading ? 'Starting...' : 'Start Game'}
             </button>
-          ))}
+          </div>
         </div>
       </div>
-
-      {/* Player Names */}
-      <div className="mb-6">
-        <label className="block text-sm font-semibold mb-2">Player Names</label>
-        <div className="space-y-2">
-          {playerNames.map((name, index) => (
-            <input
-              key={index}
-              type="text"
-              value={name}
-              onChange={(e) => handlePlayerNameChange(index, e.target.value)}
-              className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
-              placeholder={`Player ${index + 1}`}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* Start Button */}
-      <button
-        onClick={handleStartGame}
-        disabled={loading}
-        className="w-full bg-green-600 hover:bg-green-700 disabled:bg-green-800 text-white font-bold py-3 rounded transition-colors"
-      >
-        {loading ? 'Starting...' : 'Start Game'}
-      </button>
     </div>
   );
 };

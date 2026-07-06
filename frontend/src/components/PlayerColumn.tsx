@@ -12,6 +12,26 @@ interface PlayerColumnProps {
   totalHits?: Record<number, number>;
 }
 
+const CricketMark: React.FC<{ hits: number }> = ({ hits }) => {
+  const cappedHits = Math.min(Math.max(hits, 0), 3);
+
+  return (
+    <div className="w-9 h-9 flex items-center justify-center" aria-label={`${cappedHits} cricket marks`}>
+      <svg viewBox="0 0 32 32" className="w-8 h-8" fill="none" xmlns="http://www.w3.org/2000/svg">
+        {cappedHits >= 1 && (
+          <line x1="8" y1="24" x2="24" y2="8" className="stroke-orange-300" strokeWidth="3" strokeLinecap="round" />
+        )}
+        {cappedHits >= 2 && (
+          <line x1="8" y1="8" x2="24" y2="24" className="stroke-orange-300" strokeWidth="3" strokeLinecap="round" />
+        )}
+        {cappedHits >= 3 && (
+          <circle cx="16" cy="16" r="11" className="stroke-orange-300" strokeWidth="2.5" />
+        )}
+      </svg>
+    </div>
+  );
+};
+
 const PlayerColumn: React.FC<PlayerColumnProps> = ({ player, isSelected, onSelect, isDisabled, isCurrentTurn, onNumberClick, totalHits }) => {
   return (
     <div
@@ -44,11 +64,7 @@ const PlayerColumn: React.FC<PlayerColumnProps> = ({ player, isSelected, onSelec
               <div className="flex items-center justify-between w-full">
                 <div className="flex items-center gap-3">
                   <div className="number-badge">{CRICKET_NUMBER_LABELS[number]}</div>
-                  <div className="flex gap-2">
-                    {[1, 2, 3].map(i => (
-                      <div key={i} className={`hit-dot ${i <= Math.min(hits, 3) ? 'filled' : ''}`}></div>
-                    ))}
-                  </div>
+                  <CricketMark hits={hits} />
                 </div>
 
                 {/* Show total raw hits as a number on the right (sum of S/D/T values) */}
